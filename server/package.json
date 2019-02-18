@@ -1,7 +1,7 @@
 {
   "name": "myvrhome",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "app/index.js",
   "author": "Sergey Shambir <sshambir@yandex.ru>",
   "license": "MIT",
   "dependencies": {
@@ -10,5 +10,9 @@
   },
   "scripts": {
     "start": "node app/index.js"
+  },
+  "devDependencies": {
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
   }
 }
