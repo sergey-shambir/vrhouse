@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>My VR Home</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="css/viewer.css" type="text/css">
+    <script src='js/vendor/webvr-polyfill.js'></script>
+    <script>
+    if (!navigator.getVRDisplays)
+    {
+        console.warn("no native WebVR support: starting polyfill");
+        new WebVRPolyfill();
+    }
+    </script>
+  </head>
+</html>
+
+<body>
+  <canvas id="glcanvas" width="800" height="600">
+  </canvas>
+  <script src="js/viewer.js" type="text/javascript"></script>
+  <script src="glsl/cube.vert" id="shader-vs" type="x-shader/x-vertex"></script>
+  <script src="glsl/cube.frag" id="shader-fs" type="x-shader/x-fragment"></script>
+  <script>
+    startViewer(document.getElementById("glcanvas"));
+  </script>
+</body>

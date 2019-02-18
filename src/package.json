@@ -1,0 +1,14 @@
+{
+  "name": "myvrhome",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "Sergey Shambir <sshambir@yandex.ru>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "4",
+    "serve-static": "1.13"
+  },
+  "scripts": {
+    "start": "node app/index.js"
+  }
+}
