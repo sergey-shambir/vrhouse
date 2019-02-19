@@ -1,4 +1,4 @@
-import WebVRPolyfill from 'webvr-polyfill';
+import * as WebVRPolyfill from 'webvr-polyfill';
 import * as THREE from 'three';
 
 if (!navigator.getVRDisplays) {

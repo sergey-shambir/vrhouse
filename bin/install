@@ -6,6 +6,6 @@ pushd "$BIN_DIR/../frontend"
 yarn install
 popd
 
-pushd "$BIN_DIR/../backend"
+pushd "$BIN_DIR/../server"
 yarn install
 popd
