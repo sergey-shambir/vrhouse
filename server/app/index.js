@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 
-const staticDir = path.resolve(path.join(__dirname, '..', 'public'));
+const staticDir = path.resolve(path.join(__dirname, '..', '..', 'frontend', 'dist'));
 
 const app = express();
 

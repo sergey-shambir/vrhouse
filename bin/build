@@ -3,9 +3,5 @@
 BIN_DIR=$(dirname $(readlink -f $0))
 
 pushd "$BIN_DIR/../frontend"
-yarn install
-popd
-
-pushd "$BIN_DIR/../backend"
-yarn install
+yarn run build
 popd

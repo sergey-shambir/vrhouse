@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
   "devDependencies": {
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "three": "^0.101.1",
+    "webvr-polyfill": "^0.10.10"
   }
 }
