@@ -6,23 +6,22 @@ if (!navigator.getVRDisplays) {
     new WebVRPolyfill();
 }
 
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const orbitControls = new THREE.OrbitControls(camera);
 
 // Store the position of the VR HMD in a dummy camera.
-const fakeCamera = new THREE.Object3D();
+const fakeCamera = new THREE.Camera();
 const vrControls = new THREE.VRControls(fakeCamera);
 const vrEffect = new THREE.VREffect(renderer, () => { });
 
-const scene = createScene(orbitControls);
-/**
- * @param {THREE.OrbitControls} orbitControls
- */
-function createScene(orbitControls) {
+function createScene(orbitControls: THREE.OrbitControls) {
     const scene = new THREE.Scene();
     scene.add(new THREE.PointLight());
 
-    const cube = new THREE.Mesh(
+    let cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshLambertMaterial({
             color: 'green'
@@ -44,7 +43,11 @@ function createScene(orbitControls) {
         );
         scene.add(cube);
     }
+
+    return scene;
 }
+
+const scene = createScene(orbitControls);
 
 function render() {
     requestAnimationFrame(render);
@@ -69,17 +72,11 @@ function render() {
     camera.position.copy(orbitPos);
 }
 
-function createVRView() {
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    return renderer.domElement;
-}
-
 window.addEventListener('resize', function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     vrEffect.setSize(window.innerWidth, window.innerHeight);
 }, false);
 
-document.body.appendChild(createVRView());
+document.body.appendChild(renderer.domElement);
 render();

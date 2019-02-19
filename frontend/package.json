@@ -11,8 +11,11 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@types/three": "^0.93.22",
     "lodash": "^4.17.11",
     "three": "^0.101.1",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.3.3",
     "webvr-polyfill": "^0.10.10"
   }
 }
