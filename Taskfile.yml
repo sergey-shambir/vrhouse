@@ -1,0 +1,50 @@
+version: '2'
+
+tasks:
+  up:
+    dir: docker
+    cmds:
+      - docker-compose up -d
+
+  down:
+    dir: docker
+    cmds:
+      - docker-compose down
+
+  ps:
+    dir: docker
+    cmds:
+      - docker-compose ps
+
+  logs:
+    dir: docker
+    cmds:
+      - docker-compose logs
+
+  build-frontend:
+    dir: frontend
+    cmds:
+      - yarn install
+      - yarn run build
+
+  build-backend:
+    dir: backend
+    cmds:
+      - yarn install
+
+  build:
+    cmds:
+      - task: build-frontend
+      - task: build-backend
+
+  docker-build:
+    cmds:
+      - docker build --tag {{.PROJECT}}/myvrhome . -f docker/Dockerfile
+    vars:
+      PROJECT: sergey-shambir
+
+  docker-push:
+    cmds:
+      - docker push {{.PROJECT}}/myvrhome
+    vars:
+      PROJECT: sergey-shambir

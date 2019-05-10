@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  myvrhome:
+    image: "sergey-shambir/myvrhome"
+    container_name: "myvrhome"
+    ports:
+    - "80:8080"
