@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
+    "resize-observer-polyfill": "^1.5.1",
     "three": "^0.104.0",
     "ts-loader": "^5.4.5",
     "typescript": "^3.4.5",

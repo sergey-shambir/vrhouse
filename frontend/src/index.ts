@@ -10,16 +10,19 @@ if (!navigator.getVRDisplays) {
 }
 
 function run() {
-    var clock = new THREE.Clock();
+    let clock = new THREE.Clock();
 
-    var container;
-    var camera, scene, raycaster, renderer;
+    let container: HTMLElement;
+    let camera: THREE.PerspectiveCamera;
+    let scene: THREE.Scene;
+    let raycaster: THREE.Raycaster;
+    let renderer: THREE.WebGLRenderer;
 
-    var room;
-    var isMouseDown = false;
+    let room: THREE.LineSegments;
+    let isMouseDown = false;
 
-    var INTERSECTED;
-    var crosshair;
+    let intersectedObject: THREE.Object3D;
+    let crosshair: THREE.Mesh;
 
     init();
     animate();
@@ -28,14 +31,6 @@ function run() {
 
         container = document.createElement('div');
         document.body.appendChild(container);
-
-        var info = document.createElement('div');
-        info.style.position = 'absolute';
-        info.style.top = '10px';
-        info.style.width = '100%';
-        info.style.textAlign = 'center';
-        info.innerHTML = '<a href="http://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - interactive cubes';
-        container.appendChild(info);
 
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0x505050);
@@ -63,15 +58,14 @@ function run() {
 
         scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
 
-        var light = new THREE.DirectionalLight(0xffffff);
+        const light = new THREE.DirectionalLight(0xffffff);
         light.position.set(1, 1, 1).normalize();
         scene.add(light);
 
-        var geometry = new THREE.BoxBufferGeometry(0.15, 0.15, 0.15);
+        const geometry = new THREE.BoxBufferGeometry(0.15, 0.15, 0.15);
 
-        for (var i = 0; i < 200; i++) {
-
-            var object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
+        for (let i = 0; i < 200; i++) {
+            const object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff }));
 
             object.position.x = Math.random() * 4 - 2;
             object.position.y = Math.random() * 4 - 2;
@@ -123,15 +117,15 @@ function run() {
     }
 
     function onPointerRestricted() {
-        var pointerLockElement = renderer.domElement;
+        const pointerLockElement = renderer.domElement;
         if (pointerLockElement && typeof (pointerLockElement.requestPointerLock) === 'function') {
             pointerLockElement.requestPointerLock();
         }
     }
 
     function onPointerUnrestricted() {
-        var currentPointerLockElement = document.pointerLockElement;
-        var expectedPointerLockElement = renderer.domElement;
+        const currentPointerLockElement = document.pointerLockElement;
+        const expectedPointerLockElement = renderer.domElement;
         if (currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof (document.exitPointerLock) === 'function') {
             document.exitPointerLock();
         }
@@ -148,9 +142,9 @@ function run() {
     }
 
     function render() {
-        var delta = clock.getDelta() * 60;
+        const delta = clock.getDelta() * 60;
         if (isMouseDown === true) {
-            var cube = room.children[0];
+            const cube = room.children[0];
             room.remove(cube);
             cube.position.set(0, 0, - 0.75);
             cube.position.applyQuaternion(camera.quaternion);
@@ -163,22 +157,18 @@ function run() {
 
         // find intersections
         raycaster.setFromCamera({ x: 0, y: 0 }, camera);
-        var intersects = raycaster.intersectObjects(room.children);
+        const intersects = raycaster.intersectObjects(room.children);
         if (intersects.length > 0) {
-            if (INTERSECTED != intersects[0].object) {
-                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-                INTERSECTED = intersects[0].object;
-                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                INTERSECTED.material.emissive.setHex(0xff0000);
+            if (intersectedObject != intersects[0].object) {
+                intersectedObject = intersects[0].object;
             }
         } else {
-            if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-            INTERSECTED = undefined;
+            intersectedObject = undefined;
         }
 
         // Keep cubes inside room
-        for (var i = 0; i < room.children.length; i++) {
-            var cube = room.children[i];
+        for (let i = 0; i < room.children.length; i++) {
+            const cube = room.children[i];
             cube.userData.velocity.multiplyScalar(1 - (0.001 * delta));
             cube.position.add(cube.userData.velocity);
             if (cube.position.x < - 3 || cube.position.x > 3) {
