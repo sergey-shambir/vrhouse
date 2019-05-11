@@ -1,11 +1,14 @@
+import { EventDispatcher } from "three";
+
 export enum XRSessionMode {
     Inline = "inline",
     ImmersiveVR = "immersive-vr",
     ImmersiveAR = "immersive-ar"
 }
 
-export interface XRSession {
+export interface XRSession extends EventDispatcher {
     // NOTE: incomplete, see https://immersive-web.github.io/webxr/#xrsession-interface
+    end(): void;
 }
 
 export interface XRVRDisplay extends VRDisplay {

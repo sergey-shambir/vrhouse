@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { WEBVR, BoxLineGeometry } from './three-ext';
+import { BoxLineGeometry } from './three-ext';
+import { WebVRButton } from './views';
 import { mockWebVR } from './mocks';
 
 if (!navigator.getVRDisplays) {
@@ -104,7 +105,8 @@ class RoomSceneView {
         window.addEventListener('vrdisplaypointerrestricted', this.onPointerRestricted.bind(this), false);
         window.addEventListener('vrdisplaypointerunrestricted', this.onPointerUnrestricted.bind(this), false);
 
-        document.body.appendChild(WEBVR.createButton(this.renderer));
+        const webvrButton = new WebVRButton(this.renderer);
+        document.body.appendChild(webvrButton.element);
 
         this.animate();
     }

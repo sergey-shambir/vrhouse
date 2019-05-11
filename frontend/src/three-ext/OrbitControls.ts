@@ -13,7 +13,6 @@ import {
     Spherical,
     Vector2,
     Vector3,
-    Object3D,
     PerspectiveCamera,
     OrthographicCamera,
 } from "three";
