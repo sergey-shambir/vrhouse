@@ -122,11 +122,19 @@ export class WEBVR {
             const xr = navigator['xr'] as XR;
             button.style.display = 'none';
             stylizeElement(button);
-            xr.requestDevice().then(function (device) {
+            xr.requestDevice().then((device) => {
                 device.supportsSession(XRSessionMode.ImmersiveVR)
-                    .then(function () { showEnterXR(device); })
-                    .catch(showVRNotFound);
-            }).catch(showVRNotFound);
+                    .then(() => {
+                        showEnterXR(device);
+                    })
+                    .catch((err: any) => {
+                        console.error(err);
+                        showVRNotFound();
+                    });
+            }).catch((err: any) => {
+                console.error(err);
+                showVRNotFound();
+            });
             return button;
         } else if ('getVRDisplays' in navigator) {
             button.style.display = 'none';
@@ -150,7 +158,10 @@ export class WEBVR {
                     } else {
                         showVRNotFound();
                     }
-                }).catch(showVRNotFound);
+                }).catch((err: any) => {
+                    console.error(err);
+                    showVRNotFound();
+                });
             return button;
         } else {
             const message = document.createElement('a');
