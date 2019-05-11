@@ -10,35 +10,35 @@ if (!navigator.getVRDisplays) {
 }
 
 function run() {
-    let clock = new THREE.Clock();
+    const view = new RoomSceneView();
+}
 
-    let container: HTMLElement;
-    let camera: THREE.PerspectiveCamera;
-    let scene: THREE.Scene;
-    let raycaster: THREE.Raycaster;
-    let renderer: THREE.WebGLRenderer;
+class RoomSceneView {
+    clock = new THREE.Clock();
 
-    let room: THREE.LineSegments;
-    let isMouseDown = false;
+    container: HTMLElement;
+    camera: THREE.PerspectiveCamera;
+    scene: THREE.Scene;
+    raycaster: THREE.Raycaster;
+    renderer: THREE.WebGLRenderer;
 
-    let intersectedObject: THREE.Object3D;
-    let crosshair: THREE.Mesh;
+    room: THREE.LineSegments;
+    isMouseDown = false;
 
-    init();
-    animate();
+    intersectedObject: THREE.Object3D;
+    crosshair: THREE.Mesh;
 
-    function init() {
+    constructor() {
+        this.container = document.createElement('div');
+        document.body.appendChild(this.container);
 
-        container = document.createElement('div');
-        document.body.appendChild(container);
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x505050);
 
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x505050);
+        this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
+        this.scene.add(this.camera);
 
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
-        scene.add(camera);
-
-        crosshair = new THREE.Mesh(
+        this.crosshair = new THREE.Mesh(
             new THREE.RingBufferGeometry(0.02, 0.04, 32),
             new THREE.MeshBasicMaterial({
                 color: 0xffffff,
@@ -46,21 +46,21 @@ function run() {
                 transparent: true
             })
         );
-        crosshair.position.z = - 2;
-        camera.add(crosshair);
+        this.crosshair.position.z = - 2;
+        this.camera.add(this.crosshair);
 
-        room = new THREE.LineSegments(
+        this.room = new THREE.LineSegments(
             new BoxLineGeometry(6, 6, 6, 10, 10, 10),
             new THREE.LineBasicMaterial({ color: 0x808080 })
         );
-        room.position.y = 3;
-        scene.add(room);
+        this.room.position.y = 3;
+        this.scene.add(this.room);
 
-        scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
+        this.scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
 
         const light = new THREE.DirectionalLight(0xffffff);
         light.position.set(1, 1, 1).normalize();
-        scene.add(light);
+        this.scene.add(light);
 
         const geometry = new THREE.BoxBufferGeometry(0.15, 0.15, 0.15);
 
@@ -84,91 +84,92 @@ function run() {
             object.userData.velocity.y = Math.random() * 0.01 - 0.005;
             object.userData.velocity.z = Math.random() * 0.01 - 0.005;
 
-            room.add(object);
-
+            this.room.add(object);
         }
 
-        raycaster = new THREE.Raycaster();
+        this.raycaster = new THREE.Raycaster();
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.vr.enabled = true;
-        container.appendChild(renderer.domElement);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.vr.enabled = true;
+        this.container.appendChild(this.renderer.domElement);
 
-        renderer.domElement.addEventListener('mousedown', onMouseDown, false);
-        renderer.domElement.addEventListener('mouseup', onMouseUp, false);
-        renderer.domElement.addEventListener('touchstart', onMouseDown, false);
-        renderer.domElement.addEventListener('touchend', onMouseUp, false);
+        this.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
+        this.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+        this.renderer.domElement.addEventListener('touchstart', this.onMouseDown.bind(this), false);
+        this.renderer.domElement.addEventListener('touchend', this.onMouseUp.bind(this), false);
 
-        window.addEventListener('resize', onWindowResize, false);
-        window.addEventListener('vrdisplaypointerrestricted', onPointerRestricted, false);
-        window.addEventListener('vrdisplaypointerunrestricted', onPointerUnrestricted, false);
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        window.addEventListener('vrdisplaypointerrestricted', this.onPointerRestricted.bind(this), false);
+        window.addEventListener('vrdisplaypointerunrestricted', this.onPointerUnrestricted.bind(this), false);
 
-        document.body.appendChild(WEBVR.createButton(renderer));
+        document.body.appendChild(WEBVR.createButton(this.renderer));
+
+        this.animate();
     }
 
-    function onMouseDown() {
-        isMouseDown = true;
+    private animate() {
+        this.renderer.setAnimationLoop(this.render.bind(this));
     }
 
-    function onMouseUp() {
-        isMouseDown = false;
+    private onMouseDown() {
+        this.isMouseDown = true;
     }
 
-    function onPointerRestricted() {
-        const pointerLockElement = renderer.domElement;
+    private onMouseUp() {
+        this.isMouseDown = false;
+    }
+
+    private onPointerRestricted() {
+        const pointerLockElement = this.renderer.domElement;
         if (pointerLockElement && typeof (pointerLockElement.requestPointerLock) === 'function') {
             pointerLockElement.requestPointerLock();
         }
     }
 
-    function onPointerUnrestricted() {
+    private onPointerUnrestricted() {
         const currentPointerLockElement = document.pointerLockElement;
-        const expectedPointerLockElement = renderer.domElement;
+        const expectedPointerLockElement = this.renderer.domElement;
         if (currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof (document.exitPointerLock) === 'function') {
             document.exitPointerLock();
         }
     }
 
-    function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+    private onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    function animate() {
-        renderer.setAnimationLoop(render);
-    }
-
-    function render() {
-        const delta = clock.getDelta() * 60;
-        if (isMouseDown === true) {
-            const cube = room.children[0];
-            room.remove(cube);
+    private render() {
+        const delta = this.clock.getDelta() * 60;
+        if (this.isMouseDown === true) {
+            const cube = this.room.children[0];
+            this.room.remove(cube);
             cube.position.set(0, 0, - 0.75);
-            cube.position.applyQuaternion(camera.quaternion);
+            cube.position.applyQuaternion(this.camera.quaternion);
             cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
             cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
             cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
-            cube.userData.velocity.applyQuaternion(camera.quaternion);
-            room.add(cube);
+            cube.userData.velocity.applyQuaternion(this.camera.quaternion);
+            this.room.add(cube);
         }
 
         // find intersections
-        raycaster.setFromCamera({ x: 0, y: 0 }, camera);
-        const intersects = raycaster.intersectObjects(room.children);
+        this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+        const intersects = this.raycaster.intersectObjects(this.room.children);
         if (intersects.length > 0) {
-            if (intersectedObject != intersects[0].object) {
-                intersectedObject = intersects[0].object;
+            if (this.intersectedObject != intersects[0].object) {
+                this.intersectedObject = intersects[0].object;
             }
         } else {
-            intersectedObject = undefined;
+            this.intersectedObject = undefined;
         }
 
         // Keep cubes inside room
-        for (let i = 0; i < room.children.length; i++) {
-            const cube = room.children[i];
+        for (let i = 0; i < this.room.children.length; i++) {
+            const cube = this.room.children[i];
             cube.userData.velocity.multiplyScalar(1 - (0.001 * delta));
             cube.position.add(cube.userData.velocity);
             if (cube.position.x < - 3 || cube.position.x > 3) {
@@ -187,6 +188,6 @@ function run() {
             cube.rotation.y += cube.userData.velocity.y * 2 * delta;
             cube.rotation.z += cube.userData.velocity.z * 2 * delta;
         }
-        renderer.render(scene, camera);
+        this.renderer.render(this.scene, this.camera);
     }
 }
